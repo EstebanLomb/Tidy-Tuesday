@@ -4,20 +4,21 @@
 # Librerías
 library("tidyverse")
 library("data.table")
-library('scales') # visualisation
-library('RColorBrewer') # visualisation
 library('ggthemes') # visualisation
 library('viridis') # visualisation
-library('gt') # table styling
 library('ggwordcloud') # text visuals
+library("tidytuesdayR") 
 
+# Data load
+data <- tidytuesdayR::tt_load('2022-04-26')
+data <- data[[1]]
 
-data <- fread("data/kaggle_hidden_gems.csv")
-
+# Graph
 p1 <- data %>% 
   select(title) %>% 
   mutate(title = str_to_lower(title)) %>% 
-  mutate(title = str_replace(title, "covid-19", "covid19")) %>% 
+  mutate(title = str_replace(title, "covid-19", "covid19"),
+         title = str_replace(title, "visualizations", "visualization")) %>% 
   unnest_tokens(word, title) %>% 
   anti_join(stop_words, by = "word") %>% 
   count(word, sort = TRUE) %>% 
@@ -28,5 +29,10 @@ p1 <- data %>%
   scale_size_area(max_size = 20) +
   scale_color_viridis(begin = 0.3, end = 0.8, option = "B") +
   theme_void() +
-  labs(title = "Most frequent words")
+  labs(title = "Most frequent words in tittles",
+       subtitle = "Data: Kaggle Hidden Gems",
+       caption = "Author: Esteban Lombeida  / @EstebanLomb")
 p1
+
+# Cite Pakage
+citation("tidytuesdayR")
